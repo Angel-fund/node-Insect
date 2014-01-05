@@ -26,6 +26,7 @@ node-Insect
 
 ##表结构
 **企业信息表 enterprise**
+
     CREATE TABLE `enterprise` (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
     `companyname` varchar(64) NOT NULL COMMENT '企业名',
@@ -49,6 +50,7 @@ node-Insect
 
 
 **企业联系信息表**
+
     CREATE TABLE `econtact` (
      `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
       `cid` int(10) DEFAULT '0',
@@ -58,6 +60,7 @@ node-Insect
     ) ENGINE=InnoDB AUTO_INCREMENT=7880 DEFAULT CHARSET=utf8
 
 **请求报错log表**
+
     CREATE TABLE `errorurl` (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
      `url` varchar(500) NOT NULL,
@@ -67,6 +70,7 @@ node-Insect
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='请求错误url'
 
 **行业类别表（根据阿里巴巴行业id对应）**
+
     CREATE TABLE `category` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `category` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
