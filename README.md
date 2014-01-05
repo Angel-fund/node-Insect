@@ -25,7 +25,7 @@ node-Insect
     1042954:箱包皮具, 1038378:鞋 , 54:服饰配件、饰品 6:家用电器,509:通信产品 ,53:传媒、广电,1813:玩具,1501:母婴用品,311:童装
 
 **表结构**
->>企业信息表 enterprise
+企业信息表 enterprise
     CREATE TABLE `enterprise` (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
     `companyname` varchar(64) NOT NULL COMMENT '企业名',
@@ -48,7 +48,7 @@ node-Insect
     ) ENGINE=InnoDB AUTO_INCREMENT=8389 DEFAULT CHARSET=utf8
 
 
->>企业联系信息表
+企业联系信息表
     CREATE TABLE `econtact` (
      `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
       `cid` int(10) DEFAULT '0',
@@ -57,7 +57,7 @@ node-Insect
      PRIMARY KEY (`id`)
     ) ENGINE=InnoDB AUTO_INCREMENT=7880 DEFAULT CHARSET=utf8
 
->>请求报错log表
+请求报错log表
     CREATE TABLE `errorurl` (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
      `url` varchar(500) NOT NULL,
@@ -66,7 +66,7 @@ node-Insect
      PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='请求错误url'
 
->>行业类别表（根据阿里巴巴行业id对应）
+行业类别表（根据阿里巴巴行业id对应）
     CREATE TABLE `category` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `category` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
