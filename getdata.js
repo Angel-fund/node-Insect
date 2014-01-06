@@ -45,7 +45,9 @@ function getHtml(pageid,cid){
 			error['type'] = 'list';
 			error['source'] = source;
 
-		db.sqlInsert('errorur',error);
+		matchDb('errorurl',{url:url},function(){
+			db.sqlInsert('errorurl',error);
+		})
 	    console.log("Got error: " + e.message);
 	});
 }
@@ -55,8 +57,8 @@ function alibabaToDb(data){
 
 	$.each(list.data, function(index, val) {
 		var companyname = val.companyname;
-		//入库排重
-		matchDb(companyname,function(){
+		//入库排重	
+		matchDb('enterprise',{companyname:companyname},function(){
 			if (companyname) {			
 				var values=[];
 		 		values['companyname']= val.companyname;
@@ -130,7 +132,8 @@ function hcCompany(href){
 				console.log(companyname);
 			if (companyname) {	
 				//入库排重
-				matchDb(companyname,function(){				
+				// matchDb(companyname,function(){
+				matchDb('enterprise',{companyname:companyname},function(){				
 						// var $html = $(data),
 						var tableTr = $html.find('.detailsinfo table tr'),
 							contactbox = $html.find('.contactbox'),
@@ -171,9 +174,7 @@ function hcCompany(href){
 				})
 			}else{
 				console.log('企业名null,排除');
-			}
-			// console.log(values);
-		// console.log($(table).find('tr[0] td[3]').text());		//基本信息
+			}		
 		
 		return;
 	},'gbk').on('error', function(e) {
@@ -183,13 +184,17 @@ function hcCompany(href){
 			error['type'] = 'detail';
 			error['source'] = 'hc360';
 
-		db.sqlInsert('errorurl',error);
+		matchDb('errorurl',{url:url},function(){
+			db.sqlInsert('errorurl',error);
+		})
 	    console.log("Got error: " + e.message);
 	});
 }
 //比对
-function matchDb(companyname,callback){
-	db.sqlSelect('enterprise',['id'],{companyname:companyname},function(data){
+// function matchDb(companyname,callback){
+function matchDb(table,where,callback){
+	// db.sqlSelect('enterprise',['id'],{companyname:companyname},function(data){
+	db.sqlSelect(table,['id'],where,function(data){
 		// console.log(data.length);
 		if (data.length) {		
 			console.log('存在跳过');
