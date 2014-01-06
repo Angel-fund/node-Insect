@@ -22,17 +22,21 @@ stdcategoryid2 10165:男装 ,10166:女装,1043574:,
 1042954:箱包皮具, 1038378:鞋 , 54:服饰配件、饰品 6:家用电器,509:通信产品 ,53:传媒、广电,1813:玩具,1501:母婴用品,311:童装
 
 */
-var cid = process.argv[2],
-	pageNum = process.argv[3];
+/*var cid = process.argv[2],
+	start = process.argv[3],
+	end = process.argv[4];*/
+var start = parseInt(process.argv[2]),
+	end = parseInt(process.argv[3]);
+	
 
 function getHtml(pageid,cid){
 	var page = pageid*24+1,
-		url= 'http://s.hc360.com/company/机床.html?e=page&v=4',//慧聪
+		url	= 'http://s.hc360.com/company/机床.html?e='+page+'&v=4',//慧聪
 		source = '1688';
 	// var url = 'http://daili.1688.com/daili/ajax.json?action=list/list_action&event_submit_doQueryFromList=true&pageNum='+pageid+'&pageSize=15&stdcategoryid1='+cid+'&_=1388454529278'
 	nodegrass.get(url,function(data,status,headers){	
 		// alibabaToDb(data);		//阿里巴巴
-		hc360ToDb(data);		//慧聪
+		hc360ToDb(data);		//慧聪			
 		return;
 	},'gbk').on('error', function(e) {
 		//记录列表错误url
@@ -41,7 +45,7 @@ function getHtml(pageid,cid){
 			error['type'] = 'list';
 			error['source'] = source;
 
-		db.sqlInsert('errorurl',error);
+		db.sqlInsert('errorur',error);
 	    console.log("Got error: " + e.message);
 	});
 }
@@ -105,60 +109,69 @@ function hc360ToDb(data){
 	var $html = $(data),
 		company = $html.find('.list_company h3 a');		
 		$.each(company,function(i,item){
-			var href = $(item).attr('href'),
-				companyname = $.trim($(item).text());
-			hcCompany(href,companyname);			
-		})
+			var href = $(item).attr('href');
+				// companyname = $.trim($(item).text());
+				href = href+'shop/show.html';
+			// console.log(companyname);
+
+			hcCompany(href);			
+		});
+		process.nextTick(function() {
+		  console.log('=====完成====');
+		});		
 }
 
 //慧聪企业详情 
-function hcCompany(link,companyname){
-	var url = link+'shop/show.html';
-	nodegrass.get(url,function(data,status,headers){				
-			//入库排重
-			matchDb(companyname,function(){
-				if (companyname) {
-					var $html = $(data),
-					tableTr = $html.find('.detailsinfo table tr'),
-					contactbox = $html.find('.contactbox'),
-					cAbout = $html.find('.cAbout'),
-					telstr = $(contactbox).find("ul li[title^='手机']").text();
+function hcCompany(href){
+	var url = href;	
+	nodegrass.get(url,function(data,status,headers){
+			var $html = $(data),
+				companyname	= $.trim($html.find('.comName a').text());
+				console.log(companyname);
+			if (companyname) {	
+				//入库排重
+				matchDb(companyname,function(){				
+						// var $html = $(data),
+						var tableTr = $html.find('.detailsinfo table tr'),
+							contactbox = $html.find('.contactbox'),
+							cAbout = $html.find('.cAbout'),
+							telstr = $(contactbox).find("ul li[title^='手机']").text();
 
-					if (!telstr) {
-						telstr = $(contactbox).find("ul li[title^='电话']").text();	
-						telstr = telstr.split('   ')[0];
-					}
-					var tel = telstr.split('：')[1],
-						nature = $(tableTr).eq(0).find('td').eq(3).text(),				
-						values = [];
+						if (!telstr) {
+							telstr = $(contactbox).find("ul li[title^='电话']").text();	
+							telstr = telstr.split('   ')[0];
+						}
+						var tel = telstr.split('：')[1],
+							nature = $(tableTr).eq(0).find('td').eq(3).text(),				
+							values = [];
 
-					values['companyname'] = companyname;
-					// values['companyintroduction'] = $(cAbout).html()					 
-					values['companyintroduction'] = $(cAbout).html();
-					values['mainProducts'] = $.trim($(tableTr).eq(0).find('td').eq(1).text());
-					values['nature'] = $.trim($(tableTr).eq(1).find('td').eq(1).text());
-					values['businessAddress'] = $.trim($(tableTr).eq(2).find('td').eq(3).text());
-					values['legalPerson'] = $.trim($(tableTr).eq(3).find('td').eq(3).text());
-					values['turnover'] = $.trim($(tableTr).eq(4).find('td').eq(3).text());
-					
-					values['source'] = '1688';
-					values['founded'] = $.trim($(tableTr).eq(3).find('td').eq(3).text());
-					values['registeredCapital'] = $.trim($(tableTr).eq(5).find('td').eq(3).text());
-					
-					values['stdcategoryid1'] = 65;
-					values['tel'] = $.trim(tel);
-					values['contact'] = $.trim($html.find('.renName').text());
-					values['winportdomain'] = link;
-					var brandlogourl = $(cAbout).find('.cAboutPic #hc_jiaodianmain img').attr('src');
-					values['brandlogourl'] = (brandlogourl != undefined) ? brandlogourl : null;
-					values['createdTime'] = timestamp();
+						values['companyname'] = companyname;
+						// values['companyintroduction'] = $(cAbout).html()					 
+						values['companyintroduction'] = $.trim($(cAbout).text());
+						values['mainProducts'] = $.trim($(tableTr).eq(0).find('td').eq(1).text());
+						values['nature'] = $.trim($(tableTr).eq(1).find('td').eq(1).text());
+						values['businessAddress'] = $.trim($(tableTr).eq(2).find('td').eq(3).text());
+						values['legalPerson'] = $.trim($(tableTr).eq(3).find('td').eq(3).text());
+						values['turnover'] = $.trim($(tableTr).eq(4).find('td').eq(3).text());
+						
+						values['source'] = '1688';
+						values['founded'] = $.trim($(tableTr).eq(3).find('td').eq(3).text());
+						values['registeredCapital'] = $.trim($(tableTr).eq(5).find('td').eq(3).text());
+						
+						values['stdcategoryid1'] = 65;
+						values['tel'] = $.trim(tel);
+						values['contact'] = $.trim($html.find('.renName').text());
+						values['winportdomain'] = href;
+						var brandlogourl = $(cAbout).find('.cAboutPic #hc_jiaodianmain img').attr('src');
+						values['brandlogourl'] = (brandlogourl != undefined) ? brandlogourl : null;
+						values['createdTime'] = timestamp();
 
-					// db.sqlInsert('enterprise_copy',values);
-		 			console.log($.trim(values['companyintroduction']));
-				}else{
-					console.log('企业名null,排除');
-				}	
-			})
+						db.sqlInsert('enterprise',values);
+			 			// console.log(companyname);					
+				})
+			}else{
+				console.log('企业名null,排除');
+			}
 			// console.log(values);
 		// console.log($(table).find('tr[0] td[3]').text());		//基本信息
 		
@@ -176,17 +189,17 @@ function hcCompany(link,companyname){
 }
 //比对
 function matchDb(companyname,callback){
-	db.sqlSelect('enterprise_copy',['id'],{companyname:companyname},function(data){
+	db.sqlSelect('enterprise',['id'],{companyname:companyname},function(data){
 		// console.log(data.length);
 		if (data.length) {		
 			console.log('存在跳过');
 		}else{				
 			callback();
 		}
-	});
+	},0,1);
 }
 
-hcCompany('http://jsnyjc88.b2b.hc360.com/','江苏南元机床集团有限公司');
+// hcCompany('http://kaimafujian.b2b.hc360.com/shop/show.html');
 // hcCompany('http://yhret2012.b2b.hc360.com/','江苏南元机床集团有限公司');
 // getHtml(0,1);
 
@@ -208,57 +221,35 @@ function pageData(Data,pageid) {
 	// 	alert("find");
 	// }
 }
-function listData(Data,pageid) {
-	// var html = getHtml(pageid)
-	var $doc = $(Data);	
- 	$doc.find(".td_line a").each(function(i,project){
-        var $project = $(project);
- 	// 	// var name = $project.find("h3").text().trim(); 			
- 		// console.log($project.text()); 		
- 		var value=[];
- 		value['href']= $project.attr("href");
- 		value['pageid']= pageid;
- 		value['createdTime']= timestamp();
- 		db.sqlInsert('hunan_xiangtan_list',value);
- 		// console.log(value);	
 
- 	}); 		 	
-}
+
 // getHtml(2);
-
-function listLoop(start, end){   
-    while (start<end){           
-        start += 1 ;
-        getHtml(start,cid);
-    }
+function listLoop(start, end){  		
+    while (start < end){        
+        getHtml(start,65);
+        start ++;
+    }     
 }
+listLoop(start,end);
+//删除数据
+/*db.sqlDelete('errorurl',{id:2680},function(data){
+	console.log(data);
+})*/
 
-// listLoop(0,pageNum);
+//3360 120 28页
+function getErrorDb(start,pageNum){
+	db.sqlSelect('errorurl',['id','url'],null,function(data){
+		$.each(data,function(i,item){
+			console.log(item.url);			
+			hcCompany(item.url);
+		})
+	},start,pageNum)
+}
+// getErrorDb(0,12);
 // process.argv.forEach(function(val, index, array) {
 //   console.log(index + ': ' + val);
 // });
 
-function  mainLoop(start, end){     
-    while (start<=end){ 
-        id = start
-        table = 'hunan_xiangtan_list'
-        url = db.sqlSelect(table,null,{id:start})     
-        start += 1         
-        if (! url){
-          continue
-      	}
-      	console.log(url[0].href);
-        // getHtml(url, id)  
-	}
-}
-// mainLoop(1,1);
-
-/*connection.query({
-  sql: 'select * from enterprise where companyname =:companyname',
-  params: {companyname: '汉川鑫龙祥圣服装厂'}
-}, function (err, rows) {
-  console.log(rows);
-});*/
 
 // sqlSelect('enterprise',['id'],{companyname:'汉川鑫龙祥圣服装厂'},function(data){
 // 	console.log(data);
