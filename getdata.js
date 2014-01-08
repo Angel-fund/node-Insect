@@ -113,7 +113,7 @@ function hc360ToDb(data){
 		$.each(company,function(i,item){
 			var href = $(item).attr('href');
 				// companyname = $.trim($(item).text());
-				href = href+'shop/show.html';
+				href = href+'/shop/show.html';
 			// console.log(companyname);
 
 			hcCompany(href);			
@@ -173,7 +173,7 @@ function hcCompany(href){
 			 			// console.log(companyname);					
 				})
 			}else{
-				console.log('企业名null,排除');
+				console.log('企业名null,排除'+url);
 			}		
 		
 		return;
@@ -207,26 +207,6 @@ function matchDb(table,where,callback){
 // hcCompany('http://kaimafujian.b2b.hc360.com/shop/show.html');
 // hcCompany('http://yhret2012.b2b.hc360.com/','江苏南元机床集团有限公司');
 // getHtml(0,1);
-
-function pageData(Data,pageid) {
-	var $doc = $(Data);	
-	// console.log(Data);
- 	$doc.find(".detail_content p").each(function(i,project){
-        var $project = $(project);
- 	// 	// var name = $project.find("h3").text().trim(); 			
- 		console.log($project.text()); 		
- 		// var value=[];
- 		// value['href']= $project.attr("href");
- 		// value['pageid']= pageid;
- 		// value['createdTime']= CurentTime();
- 		// db.sqlInsert('hunan_xiangtan_list',value);
- 		// console.log(value);		 	
- 	}); 	
- // if(a.indexOf(b)!=-1){
-	// 	alert("find");
-	// }
-}
-
 
 // getHtml(2);
 function listLoop(start, end){  		
