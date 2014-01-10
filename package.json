@@ -1,10 +1,10 @@
 {
-	"name":"nodegrass",
+	"name":"node-Insect",
 	"version":"0.0.1",
 	"description":"nodegrass is a easy tool to process client request for Node.js",
 	"auther":{
-		"name":"sk-scottkiss",
-		"email":"skkmvp@hotmail.com"
+		"name":"Angel-fund",
+		"email":"lijiguan1@gmail.com"
 	},
 	"keywords":[
 		"request",
@@ -14,14 +14,15 @@
 	],
 	"repository":{
 		"type":"git",
-		"url":"git://github.com/scottkiss/nodegrass.git"
+		"url":"git@github.com:Angel-fund/node-Insect.git"
 	
 	},
 	 "dependencies": {
 		"iconv-lite" : "0.2.5",
 		"jsdom" : "https://github.com/tmpvar/jsdom/tarball/4cf155a1624b3fb54b2eec536a0c060ec1bab4ab",
 		"easymysql":"*",
-		"jQuery":"*"
+		"jQuery":"*",
+		"csv":"*"
 	 },
 	"main":"index",
 	 "engines": {
