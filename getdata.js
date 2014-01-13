@@ -31,7 +31,7 @@ var start = parseInt(process.argv[2]),
 
 function getHtml(pageid,cid){
 	var page = pageid*24+1,
-		url	= 'http://s.hc360.com/company/机床.html?e='+page+'&v=4',//慧聪
+		url	= 'http://s.hc360.com/company/机械市场.html?e='+page+'&v=4',//慧聪
 		source = '1688';
 	// var url = 'http://daili.1688.com/daili/ajax.json?action=list/list_action&event_submit_doQueryFromList=true&pageNum='+pageid+'&pageSize=15&stdcategoryid1='+cid+'&_=1388454529278'
 	nodegrass.get(url,function(data,status,headers){	
@@ -113,9 +113,7 @@ function hc360ToDb(data){
 		$.each(company,function(i,item){
 			var href = $(item).attr('href');
 				// companyname = $.trim($(item).text());
-				href = href+'/shop/show.html';
-			// console.log(companyname);
-
+				href = href+'/shop/show.html';			
 			hcCompany(href);			
 		});
 		process.nextTick(function() {
@@ -129,7 +127,7 @@ function hcCompany(href){
 	nodegrass.get(url,function(data,status,headers){
 			var $html = $(data),
 				companyname	= $.trim($html.find('.comName a').text());
-				console.log(companyname);
+				
 			if (companyname) {	
 				//入库排重
 				// matchDb(companyname,function(){
@@ -158,7 +156,7 @@ function hcCompany(href){
 						values['turnover'] = $.trim($(tableTr).eq(4).find('td').eq(3).text());
 						
 						values['source'] = '1688';
-						values['founded'] = $.trim($(tableTr).eq(3).find('td').eq(3).text());
+						values['founded'] = $.trim($(tableTr).eq(3).find('td').eq(1).text());
 						values['registeredCapital'] = $.trim($(tableTr).eq(5).find('td').eq(3).text());
 						
 						values['stdcategoryid1'] = 65;
@@ -169,13 +167,18 @@ function hcCompany(href){
 						values['brandlogourl'] = (brandlogourl != undefined) ? brandlogourl : null;
 						values['createdTime'] = timestamp();
 
-						db.sqlInsert('enterprise',values);
-			 			// console.log(companyname);					
+						if(values['founded'] == '—' && values['legalPerson'] == '—' && values['businessAddress'] == '—'){
+							console.log('垃圾数据',url);
+						}else{
+							db.sqlInsert('enterprise',values);
+							console.log(companyname);
+							// window.close();	
+						}			 							
 				})
 			}else{
 				console.log('企业名null,排除'+url);
-			}		
-		
+			}
+
 		return;
 	},'gbk').on('error', function(e) {
 		//记录详情页错误url		
@@ -240,8 +243,6 @@ function getErrorDb(start,pageNum){
 // 	console.log(data);
 // })
 
-// sqlInsert('pagelist',{href:'201309/demo.htm',pageid:'5',log:'demo'})
-
 //当前时间戳
 function timestamp() { 
 	var timestamp = Date.parse(new Date()); 
@@ -276,20 +277,3 @@ function CurentTime(){
         clock += mm; 
         return(clock); 
 }
-//  $.get("https://github.com/popular/forked",function(html){
-
-//  	var $doc = $(html);
-//     console.log("No.  name  language  star   forks  ")
-//  	$doc.find("ul.repolist li.source").each(function(i,project){
-
-//         var $project = $(project);
-//  		var name = $project.find("h3").text().trim();
-//  		var language = $project.find("li:eq(0)").text().trim();
-//  		var star = $project.find("li.stargazers").text().trim();
-//  		var forks = $project.find("li.forks").text().trim();
-//  		var row =String.format("{4} {0}  {1}  {2}  {3}",name,
-//  			language,star,forks,i + 1 );
- 		
-//  		console.log(row);
-//  	});
-//  });

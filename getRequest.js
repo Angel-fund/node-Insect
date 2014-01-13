@@ -1,4 +1,4 @@
-var $ = require('jQuery'),
+var cheerio = require('cheerio'),//$ = require('jQuery'),
 	nodegrass = require('nodegrass'),
 	db = require('./lib/db.js'),
 	db = new db();
@@ -27,7 +27,7 @@ var url= 'http://s.hc360.com/company/机床.html?e=25&v=4',//慧聪
 	};
 
 //代理get
-nodegrass.getProxy(url,function(data,status,headers){
+/*nodegrass.getProxy(url,function(data,status,headers){
 	console.log(data);
 	// console.log($);
 	// var list = eval('('+data+')');
@@ -37,19 +37,21 @@ nodegrass.getProxy(url,function(data,status,headers){
 	
 },reqheaders,'gbk',proxy).on('error', function(e) {
     console.log("Got error: " + e.message);
-});
+});*/
 
-/*nodegrass.get(url,function(data,status,headers){
-	console.log(data);
+nodegrass.get(url,function(data,status,headers){
+	var $ = cheerio.load(data);
+	company = $(data).find('.list_company h3 a');
+	// console.log(company);
 	// console.log($);
 	// var list = eval('('+data+')');
-	// $.each(list.data, function(index, val) {
-	// 	console.log(val.companyname);
-	// });
+	$(company).each(function(index, val) {
+		console.log($(val).text());
+	});
 	
 },'gbk').on('error', function(e) {
     console.log("Got error: " + e.message);
-});*/
+});
 /*nodegrass.post(url,function(data,status,headers){
 	console.log(headers);
 	console.log(data);
