@@ -28,16 +28,15 @@ stdcategoryid2 10165:男装 ,10166:女装,1043574:,
 	end = process.argv[4];*/
 var start = parseInt(process.argv[2]),
 	end = parseInt(process.argv[3]);
-	
 
 function getHtml(pageid,cid){
 	var page = pageid*24+1,
 		url	= 'http://s.hc360.com/company/机械市场.html?e='+page+'&v=4',//慧聪
-		source = '1688';
+		source = 'hc360';
 	// var url = 'http://daili.1688.com/daili/ajax.json?action=list/list_action&event_submit_doQueryFromList=true&pageNum='+pageid+'&pageSize=15&stdcategoryid1='+cid+'&_=1388454529278'
 	nodegrass.get(url,function(data,status,headers){	
 		// alibabaToDb(data);		//阿里巴巴
-		hc360ToDb(data);		//慧聪			
+		hc360ToDb(data,cid);		//慧聪			
 		return;
 	},'gbk').on('error', function(e) {
 		//记录列表错误url
@@ -47,7 +46,7 @@ function getHtml(pageid,cid){
 			error['source'] = source;
 
 		matchDb('errorurl',{url:url},function(){
-			db.sqlInsert('errorurl',error);
+			// db.sqlInsert('errorurl',error);
 		})
 	    console.log("Got error: " + e.message);
 	});
@@ -108,14 +107,14 @@ function getHtml(pageid,cid){
 	});
 }*/
 //慧聪 企业栏目 规则======================================
-function hc360ToDb(data){
+function hc360ToDb(data,cid){
 	var $ = cheerio.load(data),
 	// var $html = $(data),
 		company = $(data).find('.list_company h3 a');		
 		$(company).each(function(i,item){
-			var href = $(item).attr('href');				
+			var href = $(item).attr('href'),				
 				href = href+'shop/show.html';				
-			hcCompany(href);			
+			hcCompany(href,cid);			
 		});
 	/*	async.auto({
 			getpage:function(callback){
@@ -133,12 +132,12 @@ function hc360ToDb(data){
 		    log('1.1: results: ', results);
 		});*/
 		process.nextTick(function() {
-		  console.log('=====完成====');
+		  console.log('=====进入页====');
 		});		
 }
 
 //慧聪企业详情 
-function hcCompany(href){
+function hcCompany(href,cid){
 	var url = href;	
 	nodegrass.get(url,function(data,status,headers){
 			var $ = cheerio.load(data),//$html = $(data),
@@ -188,27 +187,27 @@ function hcCompany(href){
 
 						values.companyname = companyname;
 						values.companyintroduction = db.escape($(cAbout).text());
-						values.mainProducts = $(tableTr).eq(0).find('td').eq(1).text();
+						values.mainProducts = db.escape($(tableTr).eq(0).find('td').eq(1).text());
 						values.nature = $(tableTr).eq(1).find('td').eq(1).text();
-						values.businessAddress =$(tableTr).eq(2).find('td').eq(3).text().trim();
+						values.businessAddress = $(tableTr).eq(2).find('td').eq(3).text().trim();
 						values.legalPerson = $(tableTr).eq(3).find('td').eq(3).text().trim();
 						values.turnover = $(tableTr).eq(4).find('td').eq(3).text();
 						values.source = 'hc360';
 						values.founded = $(tableTr).eq(3).find('td').eq(1).text().trim();
 						values.registeredCapital = $(tableTr).eq(5).find('td').eq(3).text();
-						values.stdcategoryid1 = 65;
-						values.tel = tel;
+						values.stdcategoryid1 = cid;
+						values.tel = tel.trim();
 						values.contact = $(data).find('.renName').text().trim();
 						values.winportdomain = href;						
 						values.brandlogourl = (brandlogourl != undefined) ? brandlogourl : null;
 						values.createdTime = timestamp();
 
-console.log(companyname);	
+	
 						if(values.founded == '—' && values.legalPerson == '—' && values.businessAddress == '—'){
 							console.log('垃圾数据',url);
 						}else{
 							db.sqlInsert('enterprise',values);
-													
+							console.log(companyname);						
 						}			
 				})
 			}else{
@@ -224,7 +223,7 @@ console.log(companyname);
 			error['source'] = 'hc360';
 
 		matchDb('errorurl',{url:url},function(){
-			db.sqlInsert('errorurl',error);
+			// db.sqlInsert('errorurl',error);
 		})
 	    console.log("Got error: " + e.message);
 	});
@@ -233,8 +232,7 @@ console.log(companyname);
 // function matchDb(companyname,callback){
 function matchDb(table,where,callback){
 	// db.sqlSelect('enterprise',['id'],{companyname:companyname},function(data){
-	db.sqlSelect(table,['id'],where,function(data){
-		// console.log(data.length);
+	db.sqlSelect(table,['id'],where,function(data){		
 		if (data.length) {		
 			console.log('存在跳过');
 		}else{				
