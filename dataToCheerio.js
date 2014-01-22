@@ -124,21 +124,7 @@ function hc360ToDb(data,cid){
 				console.log(companyname);
 			});			
 		});
-	/*	async.auto({
-			getpage:function(callback){
-						$(company).each(function(i,item){
-							var href = $(item).attr('href');				
-								href = href+'shop/show.html';				
-							hcCompany(href);
-						}							
-					},
-			result:['getpage',function(callback, results){
-				console.log('=====完成====');
-			}]
-		},function(err, results) {
-		    log('1.1: err: ', err);
-		    log('1.1: results: ', results);
-		});*/
+	
 		process.nextTick(function() {
 		  console.log('=====进入页====');
 		});		
@@ -248,18 +234,33 @@ function listLoop(start, end){
 }
 // var san = end+5;
 // listLoop(start,end);
-//并行执行 310页
+// 并行执行 310页
 // async.parallel([
-//     function() { listLoop(start,end) },
-//     function() { listLoop(end,san) }  
+//     function() { for(var i=0;i<5;i++){console.log(i)} },
+//     function() { for(var j=5;j<10;j++){console.log(j)} }  
 // ], function (err, results) {
 //     log('1.1 err: ', err);
 //     log('1.1 results: ', results);
 // });
+
+async.auto({
+		getpage:function(callback){
+					for(var j=5;j<10;j++){console.log(j)}
+					callback();
+				},
+		result:['getpage',function(callback, results){
+			for(var i=0;i<5;i++){console.log(i)}
+			console.log('=====完成====');
+		}]
+	},function(err, results) {
+	    log('1.1: err: ', err);
+	    log('1.1: results: ', results);
+	});
+
 //删除数据
-/*db.sqlDelete('errorurl',{id:2680},function(data){
-	console.log(data);
-})*/
+// db.sqlDelete('errorurl',{id:2680},function(data){
+// 	console.log(data);
+// })
 
 //读取错误日志 将错误链接重新抓取插入企业表，并删除该错误链接
 function getErrorDb(start,pageNum){
@@ -273,7 +274,7 @@ function getErrorDb(start,pageNum){
 		})		
 	},start,pageNum);
 }
-getErrorDb(0,1000);
+// getErrorDb(0,1000);
 
 // process.argv.forEach(function(val, index, array) {
 //   console.log(index + ': ' + val);
