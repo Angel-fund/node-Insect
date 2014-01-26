@@ -31,13 +31,13 @@ node-Insect
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
     `companyname` varchar(64) NOT NULL COMMENT '企业名',
     `companyintroduction` text COMMENT '企业描述',
-     `businessAddress` varchar(255) DEFAULT NULL COMMENT '经营地址',
-     `legalPerson` varchar(10) DEFAULT NULL COMMENT '法定代表人',
-     `turnover` varchar(32) DEFAULT NULL COMMENT '年营业额',
-     `nature` varchar(62) DEFAULT NULL COMMENT '企业性质',
-    `source` enum('1688','hc360') NOT NULL COMMENT '采集来源',
+    `businessAddress` varchar(255) DEFAULT NULL COMMENT '经营地址',
+    `legalPerson` varchar(10) DEFAULT NULL COMMENT '法定代表人',
+    `turnover` varchar(32) DEFAULT NULL COMMENT '年营业额',
+    `nature` varchar(62) DEFAULT NULL COMMENT '企业性质',
+    `source` enum('1688','hc360','makepolo') NOT NULL COMMENT '采集来源',
     `founded` varchar(16) DEFAULT NULL COMMENT '公司成立时间',
-    `registeredCapital` int(11) DEFAULT NULL COMMENT '注册资本',
+    `registeredCapital` varchar(32) DEFAULT NULL COMMENT '注册资本',
     `mainProducts` text COMMENT '主营产品',
     `stdcategoryid1` int(8) DEFAULT NULL COMMENT '行业类别',
     `tel` varchar(20) DEFAULT NULL COMMENT '联系方式',
@@ -45,8 +45,11 @@ node-Insect
     `winportdomain` varchar(255) DEFAULT NULL COMMENT '阿里二级域名',
     `brandlogourl` varchar(255) DEFAULT NULL COMMENT '广告图片',
     `createdTime` int(13) NOT NULL,
-     PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=8389 DEFAULT CHARSET=utf8
+    `qq` varchar(15) DEFAULT NULL,
+    `licensePic` varchar(2000) DEFAULT NULL COMMENT '营业执照图片',
+    PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=49122 DEFAULT CHARSET=utf8
+
 
 
 **企业联系信息表**
